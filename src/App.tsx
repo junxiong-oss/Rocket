@@ -261,9 +261,20 @@ export default function App() {
         if (res.ok) {
           const data = await res.json();
           setDonationData(data);
+        } else {
+          throw new Error('API response not ok');
         }
       } catch (err) {
-        console.error("Failed to fetch donation data", err);
+        console.error("Failed to fetch donation data, using fallback", err);
+        // Fallback data if API fails
+        setDonationData({
+          collected: 0,
+          minGoal: 550,
+          optGoal: 1625,
+          daysLeft: 30,
+          donors: 0,
+          lastUpdated: new Date().toLocaleTimeString('fr-FR')
+        });
       }
     };
     fetchData();
@@ -305,7 +316,7 @@ export default function App() {
         <StarsBackground />
       </div>
 
-      <main className="relative z-10 max-w-6xl mx-auto px-6">
+      <main className="relative z-10 max-w-[1400px] mx-auto px-6">
         {/* Hero Section */}
         <header className="min-h-screen flex flex-col lg:flex-row items-center justify-center py-20 gap-12">
           <motion.div
@@ -595,7 +606,7 @@ export default function App() {
               <Rocket className="w-64 h-64" />
             </div>
 
-            <div className="max-w-4xl mx-auto text-center">
+            <div className="max-w-5xl mx-auto text-center">
               <div className="inline-flex items-center gap-2 text-blue-400 mb-6 font-mono text-xs uppercase tracking-[0.3em]">
                 <Heart size={14} className="animate-pulse" /> Investir dans le Futur
               </div>

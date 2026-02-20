@@ -12,6 +12,7 @@ async function startServer() {
 
   // API route to fetch donation progress
   app.get("/api/donation-progress", async (req, res) => {
+    console.log("API Request: /api/donation-progress");
     try {
       // Added cache-busting parameter to ensure real-time data
       const url = `https://trousseaprojets.fr/projet/20429-les-2ndes-si-cit-de-figeac-champollion-tirent-leurs-fusees?_t=${Date.now()}`;
@@ -65,12 +66,14 @@ async function startServer() {
 
   // Vite middleware for development
   if (process.env.NODE_ENV !== "production") {
+    console.log("Starting server in DEVELOPMENT mode");
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: "spa",
     });
     app.use(vite.middlewares);
   } else {
+    console.log("Starting server in PRODUCTION mode");
     app.use(express.static(path.join(__dirname, "dist")));
     app.get("*", (req, res) => {
       res.sendFile(path.join(__dirname, "dist", "index.html"));

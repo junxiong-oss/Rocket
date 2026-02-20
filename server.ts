@@ -10,9 +10,16 @@ async function startServer() {
   const app = express();
   const PORT = 3000;
 
+  console.log(`Initializing server... NODE_ENV: ${process.env.NODE_ENV}`);
+
+  // Health check route
+  app.get("/api/health", (req, res) => {
+    res.json({ status: "ok", mode: process.env.NODE_ENV });
+  });
+
   // API route to fetch donation progress
   app.get("/api/donation-progress", async (req, res) => {
-    console.log("API Request: /api/donation-progress");
+    console.log(`[${new Date().toISOString()}] API Request: /api/donation-progress`);
     try {
       // Added cache-busting parameter to ensure real-time data
       const url = `https://trousseaprojets.fr/projet/20429-les-2ndes-si-cit-de-figeac-champollion-tirent-leurs-fusees?_t=${Date.now()}`;
@@ -74,11 +81,19 @@ async function startServer() {
     app.use(vite.middlewares);
   } else {
     console.log("Starting server in PRODUCTION mode");
-    app.use(express.static(path.join(__dirname, "dist")));
+    const distPath = path.join(__dirname, "dist");
+    console.log(`Serving static files from: ${distPath}`);
+    app.use(express.static(distPath));
     app.get("*", (req, res) => {
-      res.sendFile(path.join(__dirname, "dist", "index.html"));
+      res.sendFile(path.join(distPath, "index.html"));
     });
   }
+
+  // 404 Logger for debugging
+  app.use((req, res) => {
+    console.warn(`[404] Not Found: ${req.method} ${req.url}`);
+    res.status(404).send("Not Found");
+  });
 
   app.listen(PORT, "0.0.0.0", () => {
     console.log(`Server running on http://localhost:${PORT}`);

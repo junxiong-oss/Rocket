@@ -268,11 +268,11 @@ export default function App() {
         console.error("Failed to fetch donation data, using fallback", err);
         // Fallback data if API fails
         setDonationData({
-          collected: 0,
+          collected: 150,
           minGoal: 550,
           optGoal: 1625,
           daysLeft: 30,
-          donors: 0,
+          donors: 4,
           lastUpdated: new Date().toLocaleTimeString('fr-FR')
         });
       }
@@ -316,7 +316,7 @@ export default function App() {
         <StarsBackground />
       </div>
 
-      <main className="relative z-10 max-w-[1400px] mx-auto px-6">
+      <main className="relative z-10 max-w-[1600px] mx-auto px-6">
         {/* Hero Section */}
         <header className="min-h-screen flex flex-col lg:flex-row items-center justify-center py-20 gap-12">
           <motion.div

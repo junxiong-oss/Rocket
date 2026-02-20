@@ -268,10 +268,10 @@ export default function App() {
         console.error("Failed to fetch donation data, using fallback", err);
         // Fallback data if API fails
         setDonationData({
-          collected: 150,
+          collected: 125,
           minGoal: 550,
           optGoal: 1625,
-          daysLeft: 30,
+          daysLeft: 24,
           donors: 4,
           lastUpdated: new Date().toLocaleTimeString('fr-FR')
         });

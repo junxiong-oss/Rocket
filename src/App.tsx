@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { motion, useScroll, useTransform } from 'motion/react';
+import { motion, useScroll, useTransform, useMotionValueEvent } from 'motion/react';
+import { Rocket3D } from './components/Rocket3D';
 import { 
   Target, 
   Zap, 
@@ -108,98 +109,6 @@ const StarsBackground = () => (
   </div>
 );
 
-const RocketIllustration = ({ activePart, onHoverPart }: { activePart?: string | null, onHoverPart?: (part: string | null) => void }) => (
-  <svg width="100%" height="100%" viewBox="0 0 200 450" fill="none" xmlns="http://www.w3.org/2000/svg" className="animate-float drop-shadow-[0_0_40px_rgba(59,130,246,0.2)]">
-    {/* Flame */}
-    <path 
-      d="M100 320 Q 70 400 100 450 Q 130 400 100 320" 
-      fill="url(#flameGradient)" 
-      className="animate-exhaust" 
-    />
-    
-    {/* Fins */}
-    <path 
-      d="M60 220 L 10 300 L 60 280 Z" 
-      fill={activePart === 'structure' ? '#3B82F6' : '#EF4444'} 
-      className="transition-colors duration-300 cursor-help"
-      onMouseEnter={() => onHoverPart?.('structure')}
-      onMouseLeave={() => onHoverPart?.(null)}
-    />
-    <path 
-      d="M140 220 L 190 300 L 140 280 Z" 
-      fill={activePart === 'structure' ? '#3B82F6' : '#DC2626'} 
-      className="transition-colors duration-300 cursor-help"
-      onMouseEnter={() => onHoverPart?.('structure')}
-      onMouseLeave={() => onHoverPart?.(null)}
-    />
-    <path 
-      d="M95 250 L 100 300 L 105 250 Z" 
-      fill="#B91C1C" 
-    />
-
-    {/* Main Body */}
-    <path 
-      d="M100 40 C 100 40, 60 140, 60 270 L 140 270 C 140 140, 100 40, 100 40 Z" 
-      fill={activePart === 'structure' ? '#F8FAFC' : '#E2E8F0'} 
-      className="transition-colors duration-300 cursor-help"
-      onMouseEnter={() => onHoverPart?.('structure')}
-      onMouseLeave={() => onHoverPart?.(null)}
-    />
-    <path 
-      d="M100 40 C 100 40, 100 140, 100 270 L 140 270 C 140 140, 100 40, 100 40 Z" 
-      fill={activePart === 'structure' ? '#F1F5F9' : '#CBD5E1'} 
-      className="transition-colors duration-300 cursor-help"
-      onMouseEnter={() => onHoverPart?.('structure')}
-      onMouseLeave={() => onHoverPart?.(null)}
-    />
-
-    {/* Window / Payload Area */}
-    <circle 
-      cx="100" cy="140" r="24" 
-      fill="#0F172A" 
-      className="cursor-help"
-      onMouseEnter={() => onHoverPart?.('payload')}
-      onMouseLeave={() => onHoverPart?.(null)}
-    />
-    <circle 
-      cx="100" cy="140" r="18" 
-      fill={activePart === 'payload' ? '#3B82F6' : '#1E293B'} 
-      stroke="#38BDF8" 
-      strokeWidth="3" 
-      className="transition-colors duration-300"
-    />
-    <circle cx="94" cy="134" r="6" fill="#38BDF8" opacity="0.4" />
-
-    {/* Electronics Section */}
-    <rect 
-      x="75" y="200" width="50" height="40" rx="4" 
-      fill={activePart === 'electronics' ? '#3B82F6' : '#64748B'} 
-      className="transition-colors duration-300 cursor-help"
-      onMouseEnter={() => onHoverPart?.('electronics')}
-      onMouseLeave={() => onHoverPart?.(null)}
-    />
-    <path d="M80 210 H 120 M 80 220 H 120 M 80 230 H 120" stroke="#1E293B" strokeWidth="1" opacity="0.5" />
-
-    {/* Engine Nozzle */}
-    <path 
-      d="M80 270 L 120 270 L 110 310 L 90 310 Z" 
-      fill={activePart === 'propulsion' ? '#3B82F6' : '#334155'} 
-      className="transition-colors duration-300 cursor-help"
-      onMouseEnter={() => onHoverPart?.('propulsion')}
-      onMouseLeave={() => onHoverPart?.(null)}
-    />
-
-    <defs>
-      <linearGradient id="flameGradient" x1="100" y1="320" x2="100" y2="450" gradientUnits="userSpaceOnUse">
-        <stop stopColor="#FCD34D" />
-        <stop offset="0.4" stopColor="#F97316" />
-        <stop offset="0.8" stopColor="#EF4444" />
-        <stop offset="1" stopColor="#EF4444" stopOpacity="0" />
-      </linearGradient>
-    </defs>
-  </svg>
-);
-
 const ScrollProgress = () => {
   const [progress, setProgress] = useState(0);
 
@@ -239,6 +148,12 @@ export default function App() {
     offset: ["start start", "end end"]
   });
 
+  const [scrollValue, setScrollValue] = useState(0);
+
+  useMotionValueEvent(scrollYProgress, "change", (latest) => {
+    setScrollValue(latest);
+  });
+
   const timeLeft = useCountdown(LAUNCH_DATE);
   const timeTranslations = { days: 'Jours', hours: 'Heures', minutes: 'Minutes', seconds: 'Secondes' };
 
@@ -268,11 +183,11 @@ export default function App() {
         console.error("Failed to fetch donation data, using fallback", err);
         // Fallback data if API fails
         setDonationData({
-          collected: 125,
+          collected: 345,
           minGoal: 550,
           optGoal: 1625,
-          daysLeft: 24,
-          donors: 4,
+          daysLeft: 5,
+          donors: 10,
           lastUpdated: new Date().toLocaleTimeString('fr-FR')
         });
       }
@@ -394,7 +309,11 @@ export default function App() {
             style={{ y: rocketY, scale: rocketScale }}
             className="flex-1 w-full max-w-md h-[500px] md:h-[700px] relative"
           >
-            <RocketIllustration activePart={activePart} onHoverPart={setActivePart} />
+            <Rocket3D 
+              activePart={activePart} 
+              onHoverPart={setActivePart} 
+              scrollProgress={scrollValue} 
+            />
             
             {/* Interactive Tooltips */}
             {activePart && (
@@ -756,6 +675,63 @@ export default function App() {
           </div>
         </section>
 
+        {/* Partners & Sponsors Section */}
+        <section className="py-32 border-t border-white/5">
+          <div className="max-w-5xl mx-auto">
+            <div className="text-center mb-20">
+              <div className="inline-flex items-center gap-2 text-blue-400 mb-6 font-mono text-xs uppercase tracking-[0.3em]">
+                <Sparkles size={14} /> Réseau d'Excellence
+              </div>
+              <h2 className="text-5xl font-bold mb-6 tracking-tighter">Nos Partenaires & <span className="text-blue-400 italic">Sponsors.</span></h2>
+              <p className="text-slate-400 max-w-2xl mx-auto font-light leading-relaxed">
+                Ils nous font confiance et soutiennent l'innovation technologique portée par la jeunesse du territoire Figeacois.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[
+                {
+                  name: "Crédit Agricole Nord Midi Pyrénées",
+                  desc: "Subvention au titre du développement de projet innovant sur le territoire Figeacois.",
+                  type: "Soutien Territorial"
+                },
+                {
+                  name: "France Pare Brise Figeac",
+                  desc: "Sponsorisation et fourniture des équipements textiles (T-shirts) pour l'ensemble des élèves.",
+                  type: "Sponsor Équipement"
+                },
+                {
+                  name: "Potez Aéro",
+                  desc: "Fourniture de matériaux composites haute performance : carbone, kevlar et verre pré-imprégnés.",
+                  type: "Partenaire Industriel"
+                },
+                {
+                  name: "Ratier Collins",
+                  desc: "Fourniture de tissus composites essentiels à la structure de nos fusées.",
+                  type: "Partenaire Industriel"
+                },
+                {
+                  name: "Planète Sciences & CNES",
+                  desc: "Support technique, logistique et expertise scientifique indispensable au succès de la mission.",
+                  type: "Support Scientifique"
+                }
+              ].map((partner, i) => (
+                <motion.div 
+                  key={i}
+                  whileHover={{ y: -5 }}
+                  className="glass-panel p-8 border-white/5 bg-white/[0.01] hover:bg-white/[0.03] hover:border-blue-500/30 transition-all flex flex-col justify-between"
+                >
+                  <div>
+                    <div className="text-[10px] font-bold uppercase tracking-widest text-blue-400 mb-4">{partner.type}</div>
+                    <h4 className="text-white font-bold mb-4 text-lg leading-tight">{partner.name}</h4>
+                    <p className="text-xs text-slate-500 leading-relaxed font-light">{partner.desc}</p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
         {/* Footer */}
         <footer className="py-24 border-t border-white/5 relative overflow-hidden">
           <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-blue-500/20 to-transparent" />
@@ -787,9 +763,10 @@ export default function App() {
               <div>
                 <h5 className="text-[10px] font-bold uppercase tracking-widest text-white mb-6">Partenaires</h5>
                 <ul className="text-xs text-slate-500 space-y-3 font-light">
-                  <li>CNES Toulouse</li>
-                  <li>Planète Sciences</li>
-                  <li>Base de Caylus</li>
+                  <li>Crédit Agricole NMP</li>
+                  <li>France Pare Brise Figeac</li>
+                  <li>Potez Aéro / Ratier Collins</li>
+                  <li>CNES / Planète Sciences</li>
                 </ul>
               </div>
               <div>

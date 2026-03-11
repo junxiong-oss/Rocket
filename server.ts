@@ -47,7 +47,7 @@ async function startServer() {
         return fallback;
       };
 
-      const collected = extractAmount("Montant collecté", 125);
+      const collected = extractAmount("Montant collecté", 345);
       const minGoal = extractAmount("Objectif Minimum", 550);
       const optGoal = extractAmount("Objectif Optimum", 1625);
       
@@ -61,8 +61,8 @@ async function startServer() {
         collected,
         minGoal,
         optGoal,
-        daysLeft: parseInt(daysMatch?.[1] || "24"),
-        donors: parseInt(donorsMatch?.[1] || "4"),
+        daysLeft: parseInt(daysMatch?.[1] || "5"),
+        donors: parseInt(donorsMatch?.[1] || "10"),
         lastUpdated: new Date().toLocaleTimeString('fr-FR')
       });
     } catch (error) {
